@@ -28,10 +28,10 @@ namespace ScrcpyNet
         private Thread? videoThread;
         private Thread? controlThread;
         private TcpClient? videoClient;
+        private TcpClient? audioClient;
         private TcpClient? controlClient;
         private TcpListener? listener;
         private CancellationTokenSource? cts;
-
         private readonly AdbClient adb;
         private readonly DeviceData device;
         private readonly Channel<IControlMessage> controlChannel = Channel.CreateUnbounded<IControlMessage>();
@@ -76,6 +76,12 @@ namespace ScrcpyNet
 
             videoClient = listener.AcceptTcpClient();
             log.Information("Video socket connected.");
+
+            if (!listener.Pending())
+                throw new Exception("Server is not sending a second connection request. Is 'audio' disabled?");
+
+            audioClient = listener.AcceptTcpClient();
+            log.Information("Audio socket connected.");
 
             if (!listener.Pending())
                 throw new Exception("Server is not sending a second connection request. Is 'control' disabled?");
