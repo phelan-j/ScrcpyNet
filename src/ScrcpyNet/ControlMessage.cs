@@ -100,7 +100,7 @@ namespace ScrcpyNet
 
         public Span<byte> ToBytes()
         {
-            Span<byte> b = new byte[28];
+            Span<byte> b = new byte[32];
             b[0] = (byte)Type;
             b[1] = (byte)Action;
             BinaryPrimitives.WriteUInt64BigEndian(b[2..], PointerId);
@@ -116,6 +116,7 @@ namespace ScrcpyNet
             b[23] = 0xFF;
 
             BinaryPrimitives.WriteInt32BigEndian(b[24..], (int)Buttons);
+            BinaryPrimitives.WriteInt32BigEndian(b[28..], (int)Buttons);
 
             return b;
         }
