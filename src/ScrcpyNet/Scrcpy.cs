@@ -133,20 +133,25 @@ namespace ScrcpyNet
             var infoStream = videoClient.GetStream();
             infoStream.ReadTimeout = 2000;
 
-            // Read 68-byte header.
-            var deviceInfoBuf = pool.Rent(68);
-            int bytesRead = infoStream.Read(deviceInfoBuf, 0, 68);
+            // Read 64-byte header.
+            var deviceInfoBuf = pool.Rent(64);
+            int bytesRead = infoStream.Read(deviceInfoBuf, 0, 64);
 
-            if (bytesRead != 68)
-                throw new Exception($"Expected to read exactly 68 bytes, but got {bytesRead} bytes.");
+            if (bytesRead != 64) throw new Exception($"Expected to read exactly 64 bytes, but got {bytesRead} bytes.");
 
             // Decode device name from header.
             var deviceInfoSpan = deviceInfoBuf.AsSpan();
             DeviceName = Encoding.UTF8.GetString(deviceInfoSpan[..64]).TrimEnd(new[] { '\0' });
             log.Information("Device name: " + DeviceName);
 
-            Width = BinaryPrimitives.ReadInt16BigEndian(deviceInfoSpan[64..]);
-            Height = BinaryPrimitives.ReadInt16BigEndian(deviceInfoSpan[66..]);
+            deviceInfoBuf = pool.Rent(12);
+            bytesRead = infoStream.Read(deviceInfoBuf, 0, 12);
+            if (bytesRead != 12) throw new Exception($"Expected to read exactly 12 bytes, but got {bytesRead} bytes.");
+
+            deviceInfoSpan = deviceInfoBuf.AsSpan();
+
+            Width = BinaryPrimitives.ReadInt32BigEndian(deviceInfoSpan[4..]);
+            Height = BinaryPrimitives.ReadInt32BigEndian(deviceInfoSpan[8..]);
             log.Information($"Initial texture: {Width}x{Height}");
 
             pool.Return(deviceInfoBuf);
