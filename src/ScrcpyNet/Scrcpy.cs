@@ -302,8 +302,7 @@ namespace ScrcpyNet
                 "com.genymobile.scrcpy.Server",
 
                 version,
-                "log_level=debug",
-                $"bit_rate={Bitrate}"
+                "log_level=debug"
             };
 
             if (maxFramerate != 0)
