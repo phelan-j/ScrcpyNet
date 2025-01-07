@@ -278,7 +278,7 @@ namespace ScrcpyNet
             var cts = new CancellationTokenSource();
             var receiver = new SerilogOutputReceiver();
 
-            string version = "1.23";
+            string version = "3.1";
             int maxFramerate = 0;
             ScrcpyLockVideoOrientation orientation = ScrcpyLockVideoOrientation.Unlocked; // -1 means allow rotate
             bool control = true;
